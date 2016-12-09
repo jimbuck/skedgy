@@ -1,6 +1,6 @@
 {
   "name": "skedgy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Periodically check for and queue work to be done!",
   "main": "index.js",
   "scripts": {
