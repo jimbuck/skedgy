@@ -1,0 +1,58 @@
+{
+  "name": "skedgy",
+  "version": "0.0.1",
+  "description": "Periodically check for and queue work to be done!",
+  "main": "index.js",
+  "scripts": {
+    "clean": "gulp clean",
+    "rebuild": "gulp build",
+    "watch": "gulp watch",
+    "test": "gulp test",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "preversion": "npm test",
+    "version": "git add -A",
+    "postversion": "git push && git push --tags && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JimmyBoh/skedgy.git"
+  },
+  "author": "Jim Buck <jim@jimmyboh.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JimmyBoh/skedgy/issues"
+  },
+  "homepage": "https://github.com/JimmyBoh/skedgy#readme",
+  "devDependencies": {
+    "@types/node": "0.0.2",
+    "ava": "^0.17.0",
+    "coveralls": "^2.11.15",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-shell": "^0.5.2",
+    "nyc": "^10.0.0",
+    "typescript": "^2.1.4",
+    "yargs": "^6.5.0"
+  },
+  "dependencies": {
+    "@types/debug": "0.0.29",
+    "debug": "^2.3.3",
+    "env-paths": "^0.3.1"
+  },
+  "ava": {
+    "files": [
+      "./dist/**/*.spec.js"
+    ],
+    "source": [
+      "./dist/**/*.js"
+    ]
+  },
+  "nyc": {
+    "include": [
+      "dist/**/*.js"
+    ],
+    "exclude": [
+      "dist/**/*.spec.js"
+    ]
+  }
+}
