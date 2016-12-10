@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "description": "Periodically check for and queue work to be done!",
   "main": "index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "gulp clean",
     "rebuild": "gulp build",
