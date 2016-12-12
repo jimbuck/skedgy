@@ -33,10 +33,10 @@ function transformData() : Promise<void>  {
 }
 
 const sched = new Scheduler<string>({
-    pollMinDelay: 5,
+    pollMinDelay: 3, // 3 to 5 second delay
     pollMaxDelay: 5,
-    taskMinDelay: 3,
-    taskMaxDelay: 3,
+    taskMinDelay: 5, // 5 to 10 second delay
+    taskMaxDelay: 10,
     poll: async (enqueue) => {
         let tasks = Math.floor(Math.random() * 3) + 1;
         for (let i = 0; i < tasks; i++) {
@@ -65,9 +65,9 @@ setTimeout(() => {
 ## Features:
  - Simple to use API.
  - Built on Promises!
- - Randomly vary the interval between polling
+ - Randomly vary the interval between polling.
  - Throttle the work functions with a random range (so it's not predictable).
- - Persists work queue to configurable LevelDB instance (defaults to in-mem).
+ - Persists work to super simple, overridable queue (defaults to in-mem queue).
  
 ## Contribute
  

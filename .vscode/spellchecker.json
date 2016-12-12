@@ -1,0 +1,17 @@
+{
+    "language": "en_US",
+    "ignoreWordsList": [
+        "overridable",
+        "Skedgy",
+        "skedge",
+        "sched"
+    ],
+    "documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ],
+    "ignoreRegExp": [],
+    "ignoreFileExtensions": [],
+    "checkInterval": 5000
+}
