@@ -31,7 +31,7 @@ const sched = new Skedgy<string>({
             enqueue(data); // Adds the data to the work queue.
         }
     },
-    task: async (item) => {
+    work: async (item) => {
         await transformData();
     }
 });

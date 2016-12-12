@@ -1,5 +1,12 @@
 import { guid } from '../utils/guid';
 
+/**
+ * The available options used to configure skedgy.
+ * 
+ * @export
+ * @interface Options
+ * @template T
+ */
 export interface Options<T> {
   
   /**
@@ -20,7 +27,7 @@ export interface Options<T> {
    * 
    * @memberOf Options
    */
-  task(item: T): Promise<void>;
+  work(item: T): Promise<void>;
 
   /**
    * The minimum number of seconds to wait before checking for new work.
@@ -28,7 +35,7 @@ export interface Options<T> {
    * @type {number}
    * @memberOf Options
    */
-  pollMinDelay: number;
+  pollMinDelay?: number;
 
   /**
    * The maximum number of seconds to the wait before checking for new work ().
@@ -68,8 +75,41 @@ export interface Options<T> {
   db?: PromiseQueue<T>;
 }
 
+
+/**
+ * A simple queue implementation that relies on promises.
+ * 
+ * @export
+ * @interface PromiseQueue
+ * @template T
+ */
 export interface PromiseQueue<T> {
+  
+  /**
+   * Returns the first item in the queue, without modifying the state of the queue.
+   * 
+   * @returns {Promise<T>}
+   * 
+   * @memberOf PromiseQueue
+   */
   peek(): Promise<T>;
+  
+  /**
+   * Adds the item to the end of the queue.
+   * 
+   * @param {T} item The item to be added.
+   * @returns {Promise<void>}
+   * 
+   * @memberOf PromiseQueue
+   */
   enqueue(item: T): Promise<void>;
+
+  /**
+   * Removes the first item from the queue and returns the item.
+   * 
+   * @returns {Promise<T>}
+   * 
+   * @memberOf PromiseQueue
+   */
   dequeue(): Promise<T>;
 }

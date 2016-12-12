@@ -52,7 +52,8 @@
       "dist/**/*.js"
     ],
     "exclude": [
-      "dist/**/*.spec.js"
+      "dist/**/*.spec.js",
+      "dist/example.js"
     ]
   }
 }

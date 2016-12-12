@@ -14,7 +14,7 @@ export class Poller<T> extends Repeater {
   }) {
     super({
       minDelay: options.minDelay,
-      maxDelay: options.maxDelay || 0,
+      maxDelay: options.maxDelay,
       cb: async () => {
         log('Polling...');
         const pendingQueues: Array<Promise<void>> = [];

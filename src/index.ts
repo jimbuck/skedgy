@@ -8,8 +8,18 @@ import { logger, IDebugger } from './utils/logger';
 
 const log = logger('core');
 
+export { Options, PromiseQueue } from './lib/models';
+export { MemQueue } from './lib/queue';
+
 export class Skedgy<T> {
 
+  /**
+   * The number of seconds until the the next poll is made.
+   * 
+   * @readonly
+   * @type {number}
+   * @memberOf Skedgy
+   */
   public get nextPoll(): number {
     if (!this._poller.nextEvent) return null;
 
@@ -17,7 +27,14 @@ export class Skedgy<T> {
 
     return next < 0 ? 0 : next;
   }
-
+    
+  /**
+   * The number of seconds until the the next task is started.
+   * 
+   * @readonly
+   * @type {number}
+   * @memberOf Skedgy
+   */
   public get nextWork(): number {
     if (!this._worker.nextEvent) return null;
 
@@ -43,11 +60,23 @@ export class Skedgy<T> {
 
     this._db = this._options.db;
 
+    if (typeof this._options.poll !== 'function') {
+      let msg = `A 'poll' method is required to check for new work!`;
+      log(msg);
+      throw new Error(msg);
+    }
+      
+    if (typeof this._options.work !== 'function') {
+      let msg = `A 'work' method is required to execute!`;
+      log(msg);
+      throw new Error(msg); 
+    }
+
     this._worker = new Worker<T>({
       minDelay: this._options.taskMinDelay,
       maxDelay: this._options.taskMaxDelay,
       db: this._options.db,
-      work: this._options.task.bind(null)
+      work: this._options.work.bind(null)
     });
 
     this._poller = new Poller<T>({
@@ -58,13 +87,24 @@ export class Skedgy<T> {
     });
   }
 
+    
+  /**
+   * Starts the service (beings by polling for new work and begin any saved work).
+   * 
+   * @memberOf Skedgy
+   */
   public start(): void {
     log('Starting...');
     this._worker.start();
     this._poller.start();
     log('Started!');
   }
-
+  
+  /**
+   * Stops the service (any in-progress work may be lost). 
+   * 
+   * @memberOf Skedgy
+   */
   public stop(): void {
     log('Stopping...');
     this._worker && this._worker.stop();
