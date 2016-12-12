@@ -8,7 +8,7 @@ import { logger, IDebugger } from './utils/logger';
 
 const log = logger('core');
 
-export class Scheduler<T> {
+export class Skedgy<T> {
 
   public get nextPoll(): number {
     if (!this._poller.nextEvent) return null;

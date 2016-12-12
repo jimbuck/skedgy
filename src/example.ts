@@ -1,4 +1,4 @@
-import { Scheduler } from './';
+import { Skedgy } from './';
 
 // Create a limited set of random "response" data...
 const responses = Array(10).fill(0).map((x) => Math.random().toString(36).substr(2, 10));
@@ -17,7 +17,7 @@ function transformData(): Promise<void>  {
   });
 }
 
-const sched = new Scheduler<string>({
+const sched = new Skedgy<string>({
     pollMinDelay: 5,
     pollMaxDelay: 5,
     taskMinDelay: 3,
