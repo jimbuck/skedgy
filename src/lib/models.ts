@@ -1,5 +1,3 @@
-import { guid } from '../utils/guid';
-
 /**
  * The available options used to configure skedgy.
  * 
