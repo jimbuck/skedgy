@@ -1,6 +1,6 @@
 import { test } from 'ava';
 
-import { Skedgy, Options, PromiseQueue } from './';
+import { Skedgy } from './';
 
 test(`Skedgy requires options`, t => {
   const GenericSkedgy = Skedgy as any;

@@ -67,10 +67,10 @@ export interface Options<T> {
    *  enqueue(item: T): Promise<void>
    *  dequeue(): Promise<T>
    * 
-   * @type {PromiseQueue<T>}
+   * @type {AsyncQueue<T>}
    * @memberOf Options
    */
-  db?: PromiseQueue<T>;
+  db?: AsyncQueue<T>;
 }
 
 
@@ -78,10 +78,10 @@ export interface Options<T> {
  * A simple queue implementation that relies on promises.
  * 
  * @export
- * @interface PromiseQueue
+ * @interface AsyncQueue
  * @template T
  */
-export interface PromiseQueue<T> {
+export interface AsyncQueue<T> {
   
   /**
    * Returns the first item in the queue, without modifying the state of the queue.

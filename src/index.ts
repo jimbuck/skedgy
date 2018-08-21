@@ -1,14 +1,14 @@
 
-import { Options, PromiseQueue } from './lib/models';
+import { Options, AsyncQueue } from './lib/models';
 import { Worker } from './lib/worker';
 import { Poller } from './lib/poller';
 import { MemQueue } from './lib/queue';
 import { Repeater } from './utils/repeater';
-import { logger, IDebugger } from './utils/logger';
+import { logger } from './utils/logger';
 
 const log = logger('core');
 
-export { Options, PromiseQueue } from './lib/models';
+export { Options, AsyncQueue } from './lib/models';
 export { MemQueue } from './lib/queue';
 
 export class Skedgy<T> {
@@ -45,7 +45,7 @@ export class Skedgy<T> {
 
   private _options: Options<T>;
 
-  private _db: PromiseQueue<T>;
+  private _db: AsyncQueue<T>;
   private _worker: Worker<T>;  
   private _poller: Repeater;
 

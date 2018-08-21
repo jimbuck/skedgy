@@ -1,7 +1,7 @@
 
-import { PromiseQueue } from './models';
+import { AsyncQueue } from './models';
 
-export class MemQueue<T> implements PromiseQueue<T> {
+export class MemQueue<T> implements AsyncQueue<T> {
 
   private _queue: Array<T>;
 

@@ -1,5 +1,5 @@
 
-import { PromiseQueue } from './models';
+import { AsyncQueue } from './models';
 import { Repeater } from '../utils/repeater';
 import { logger } from '../utils/logger';
 
@@ -9,7 +9,7 @@ export class Worker<T> extends Repeater {
   constructor(options: {
     minDelay?: number,
     maxDelay?: number,
-    db: PromiseQueue<T>,
+    db: AsyncQueue<T>,
     work: (item: T) => Promise<void>
   }) {
     super({
