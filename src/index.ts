@@ -45,7 +45,7 @@ export class Skedgy<T> {
 
   private _options: Options<T>;
 
-  private _db: AsyncQueue<T>;
+  private _queue: AsyncQueue<T>;
   private _worker: Worker<T>;  
   private _poller: Repeater;
 
@@ -57,7 +57,7 @@ export class Skedgy<T> {
       taskMaxDelay: 0     // No delay
     }, options);
 
-    this._db = this._options.db || new MemQueue();
+    this._queue = this._options.queue || new MemQueue();
 
     if (typeof this._options.poll !== 'function') {
       let msg = `A 'poll' method is required to check for new work!`;
@@ -74,7 +74,7 @@ export class Skedgy<T> {
     this._worker = new Worker<T>({
       minDelay: this._options.taskMinDelay,
       maxDelay: this._options.taskMaxDelay,
-      db: this._options.db,
+      db: this._queue,
       work: this._options.work.bind(null)
     });
 
@@ -112,7 +112,7 @@ export class Skedgy<T> {
   }
 
   private async _enqueue(data: T): Promise<void> {
-    await this._db.enqueue(data);
+    await this._queue.enqueue(data);
     this._worker.start();
   }
 }

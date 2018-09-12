@@ -60,17 +60,17 @@ export interface Options<T> {
   taskMaxDelay?: number;
 
   /**
-   * Data store to use. Defaults to a simple in-memory queue.
+   * FILO Queue used to store the data. Defaults to a simple in-memory queue.
    *
    * Required API:
    *  peek(): Promise<T>
-   *  enqueue(item: T): Promise<void>
+   *  enqueue(item: T): Promise<T>
    *  dequeue(): Promise<T>
    * 
    * @type {AsyncQueue<T>}
    * @memberOf Options
    */
-  db?: AsyncQueue<T>;
+  queue?: AsyncQueue<T>;
 }
 
 
