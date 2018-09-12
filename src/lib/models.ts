@@ -96,11 +96,11 @@ export interface AsyncQueue<T> {
    * Adds the item to the end of the queue.
    * 
    * @param {T} item The item to be added.
-   * @returns {Promise<void>}
+   * @returns {Promise<void>} The enqueued item.
    * 
    * @memberOf PromiseQueue
    */
-  enqueue(item: T): Promise<void>;
+  enqueue(item: T): Promise<T>;
 
   /**
    * Removes the first item from the queue and returns the item.

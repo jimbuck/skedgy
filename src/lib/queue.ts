@@ -13,8 +13,9 @@ export class MemQueue<T> implements AsyncQueue<T> {
     return this._queue[0];
   }
 
-  public async enqueue(item: T): Promise<void> {
+  public async enqueue(item: T): Promise<T> {
     this._queue.push(item);
+    return item;
   }
 
   public async dequeue(): Promise<T> {
