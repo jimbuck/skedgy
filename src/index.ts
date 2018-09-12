@@ -54,11 +54,10 @@ export class Skedgy<T> {
       pollMinDelay: 300,  // Five minutes
       pollMaxDelay: 300,  // No variance
       taskMinDelay: 0,    // No delay
-      taskMaxDelay: 0,    // No delay
-      db: new MemQueue()
+      taskMaxDelay: 0     // No delay
     }, options);
 
-    this._db = this._options.db;
+    this._db = this._options.db || new MemQueue();
 
     if (typeof this._options.poll !== 'function') {
       let msg = `A 'poll' method is required to check for new work!`;
