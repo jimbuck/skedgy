@@ -10,7 +10,7 @@ Periodically check for and queue work to be done!
 [![Monthly Downloads](https://img.shields.io/npm/dm/skedgy.svg?style=flat-square)](https://www.npmjs.com/package/skedgy)
 [![Total Downloads](https://img.shields.io/npm/dt/skedgy.svg?style=flat-square)](https://www.npmjs.com/package/skedgy)
 
-Skedgy (pronounced "sk-edge-ee") is an opinionated scheduling library for NodeJS. The purpose of skedgy is to periodically check for work with a random delay between each check, as well as queue and execute tasks with a random delay between each execution. The goal was to create a scheduler that acts naturally, not with exact timing that can be tracked. Tasks are always run one at a time and never retried (for now).
+Skedgy (pronounced "ske-gee") is an opinionated scheduling library for NodeJS. The purpose of skedgy is to periodically check for work with a random delay between each check, as well as queue and execute tasks with a random delay between each execution. The goal was to create a scheduler that acts naturally, not with exact timing that can be tracked. Tasks are always run one at a time and never retried (for now).
 
 ## Example:
 
