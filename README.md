@@ -10,55 +10,60 @@ Periodically check for and queue work to be done!
 [![Monthly Downloads](https://img.shields.io/npm/dm/skedgy.svg?style=flat-square)](https://www.npmjs.com/package/skedgy)
 [![Total Downloads](https://img.shields.io/npm/dt/skedgy.svg?style=flat-square)](https://www.npmjs.com/package/skedgy)
 
-Skedgy (pronounced "ske-gee") is an opinionated scheduling library for NodeJS. The purpose of skedgy is to periodically check for work with a random delay between each check, as well as queue and execute tasks with a random delay between each execution. The goal was to create a scheduler that acts naturally, not with exact timing that can be tracked. Tasks are always run one at a time and never retried (for now).
+Skedgy (pronounced "ske-gee") is an opinionated scheduling library for NodeJS. The purpose of skedgy is to periodically check for work with a random delay between each check, as well as queue and execute tasks with a random delay between each execution. The goal was to create a scheduler that acts naturally, not with exact timing that can be tracked. Tasks are always run one at a time and never retried.
 
 ## Example:
 
 ```ts
-import { Skedgy } from 'skedgy';
+import { Scheduler } from 'skedgy';
 
-// Create a limited set of random "response" data...
+// Create a limited set of random 'response' data...
 const responses = Array(10).fill(0).map((x) => Math.random().toString(36).substr(2, 10));
 
+// Pretend this is a much cooler check...
+async function someExternalRequest(): Promise<string> {
+  await randomDelay(3000);
+  return responses.pop();
+}
+
 // Pretend this is a much cooler action...
-function someWebRequest(){
-  return Promise.resolve(responses.pop());
+async function processData(text: string) {
+  await randomDelay(3000);
+  console.log(text.toUpperCase());
+  await randomDelay(1000);
 }
 
-// Pretend this is a more impressive action...
-function transformData() : Promise<void>  {
-  return new Promise<void>((resolve) => { 
-    setTimeout(resolve, 2000);
-  });
+class ExampleScheduler extends Scheduler<string> {
+  
+  protected async poll(): Promise<void> {
+    let result = await someExternalRequest();
+    this.enqueue(result);
+  }
+  
+  protected async work(item: string): Promise<void> {
+    await processData(item);
+  }
 }
 
-const sched = new Scheduler<string>({
-    pollMinDelay: 3, // 3 to 5 second delay
-    pollMaxDelay: 5,
-    taskMinDelay: 5, // 5 to 10 second delay
-    taskMaxDelay: 10,
-    poll: async (enqueue) => {
-        let tasks = Math.floor(Math.random() * 3) + 1;
-        for (let i = 0; i < tasks; i++) {
-            if (responses.length === 0) break;
-
-            let data = await someWebRequest();
-            enqueue(data); // Adds the data to the work queue.
-        }
-    },
-    task: async (item) => {
-        await transformData();
-    }
+const sched = new ExampleScheduler({
+  pollMinDelay: 3000,
+  pollMaxDelay: 8000,
+  taskMinDelay: 3000,
+  taskMaxDelay: 5000
 });
 
 // Start the scheduler...
 sched.start();
 
 setTimeout(() => {
-    // Force stop after 1m...
+    // Force stop after 60s...
     sched.stop();
     process.exit(0);
 }, 60 * 1000);
+
+function randomDelay(delay: number) {
+  return new Promise(resolve => setTimeout(resolve, Math.random() * delay));
+}
 
 ```
 

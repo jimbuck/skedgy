@@ -3,7 +3,6 @@ import { Options, AsyncQueue } from './lib/models';
 import { Worker } from './lib/worker';
 import { Poller } from './lib/poller';
 import { MemQueue } from './lib/queue';
-import { Repeater } from './utils/repeater';
 import { logger } from './utils/logger';
 
 const log = logger('core');
@@ -11,34 +10,30 @@ const log = logger('core');
 export { Options, AsyncQueue } from './lib/models';
 export { MemQueue } from './lib/queue';
 
-export class Skedgy<T> {
+export abstract class Scheduler<T> {
 
   /**
-   * The number of seconds until the the next poll is made.
+   * The number of milliseconds until the the next poll is made.
    * 
    * @readonly
-   * @type {number}
-   * @memberOf Skedgy
    */
   public get nextPoll(): number {
     if (!this._poller.nextEvent) return null;
 
-    let next = (this._poller.nextEvent.valueOf() - Date.now()) / 1000;
+    let next = this._poller.nextEvent.valueOf() - Date.now();
 
     return next < 0 ? 0 : next;
   }
-    
+
   /**
-   * The number of seconds until the the next task is started.
+   * The number of milliseconds until the the next task is started.
    * 
    * @readonly
-   * @type {number}
-   * @memberOf Skedgy
    */
   public get nextWork(): number {
     if (!this._worker.nextEvent) return null;
 
-    let next = (this._worker.nextEvent.valueOf() - Date.now()) / 1000;
+    let next = this._worker.nextEvent.valueOf() - Date.now();
 
     return next < 0 ? 0 : next;
   }
@@ -47,7 +42,7 @@ export class Skedgy<T> {
 
   private _queue: AsyncQueue<T>;
   private _worker: Worker<T>;  
-  private _poller: Repeater;
+  private _poller: Poller;
 
   constructor(options: Options<T>) {
     this._options = Object.assign({
@@ -59,38 +54,22 @@ export class Skedgy<T> {
 
     this._queue = this._options.queue || new MemQueue();
 
-    if (typeof this._options.poll !== 'function') {
-      let msg = `A 'poll' method is required to check for new work!`;
-      log(msg);
-      throw new Error(msg);
-    }
-      
-    if (typeof this._options.work !== 'function') {
-      let msg = `A 'work' method is required to execute!`;
-      log(msg);
-      throw new Error(msg); 
-    }
-
     this._worker = new Worker<T>({
       minDelay: this._options.taskMinDelay,
       maxDelay: this._options.taskMaxDelay,
       db: this._queue,
-      work: this._options.work.bind(null)
+      work: this.work.bind(this)
     });
 
-    this._poller = new Poller<T>({
+    this._poller = new Poller({
       minDelay: this._options.pollMinDelay,
       maxDelay: this._options.pollMaxDelay,
-      poll: this._options.poll,
-      enqueue: this._enqueue.bind(this)
+      poll: this.poll.bind(this)
     });
   }
 
-    
   /**
    * Starts the service (beings by polling for new work and begin any saved work).
-   * 
-   * @memberOf Skedgy
    */
   public start(): void {
     log('Starting...');
@@ -101,8 +80,6 @@ export class Skedgy<T> {
   
   /**
    * Stops the service (any in-progress work may be lost). 
-   * 
-   * @memberOf Skedgy
    */
   public stop(): void {
     log('Stopping...');
@@ -111,8 +88,23 @@ export class Skedgy<T> {
     log('Stopped!');
   }
 
-  private async _enqueue(data: T): Promise<void> {
-    await this._queue.enqueue(data);
-    this._worker.start();
+  /**
+   * Checks for new work, returning a promise to notify of completion.
+   * 
+   * @param {(data: T) => void} queue Method used to push data onto the work queue.
+   * @returns {Promise<void>} A promise resolving when the poll is complete.
+   */
+  protected abstract poll(): Promise<void>;
+
+  /**
+   * Executes some work based on data from the queue.
+   * 
+   * @param {T} item The current item off of the queue.
+   * @returns {Promise<void>}
+   */
+  protected abstract work(item: T): Promise<void>;
+
+  protected async enqueue(item: T) {
+    this._queue.enqueue(item);
   }
 }

@@ -4,29 +4,26 @@ import { logger } from '../utils/logger';
 
 const log = logger('poller');
 
-export class Poller<T> extends Repeater {
-    
+export class Poller extends Repeater {
+
+  private _poll: () => Promise<void>;
+
   constructor(options: {
     minDelay?: number,
     maxDelay?: number,
-    poll: (enqueue: (data: T) => void) => Promise<void>,
-    enqueue: (data: T) => Promise<void>
+    poll: () => Promise<void>,
   }) {
     super({
       minDelay: options.minDelay,
       maxDelay: options.maxDelay,
-      cb: async () => {
-        log('Polling...');
-        const pendingQueues: Array<Promise<void>> = [];
-        await options.poll(data => {
-          log('Enqueueing work...')
-          pendingQueues.push(options.enqueue(data));
-        });
-
-        await Promise.all(pendingQueues);
-        log('Polled!');
-      },
       log
     });
+    this._poll = options.poll;
+  }
+
+  public async act() {
+    log('Polling...');
+    await this._poll();
+    log('Polled!');
   }
 }

@@ -1,46 +1,49 @@
-import { Skedgy } from './';
+import { Scheduler } from './';
 
-// Create a limited set of random "response" data...
+// Create a limited set of random 'response' data...
 const responses = Array(10).fill(0).map((x) => Math.random().toString(36).substr(2, 10));
 
+// Pretend this is a much cooler check...
+async function someExternalRequest(): Promise<string> {
+  await randomDelay(3000);
+  return responses.pop();
+}
+
 // Pretend this is a much cooler action...
-function someWebRequest(): Promise<string> {
-  return new Promise<string>((resolve) => {
-    setTimeout(() => resolve(responses.pop()), 1000);
-  });
+async function processData(text: string) {
+  await randomDelay(3000);
+  console.log(text.toUpperCase());
+  await randomDelay(1000);
 }
 
-// Pretend this is a more impressive action...
-function transformData(): Promise<void>  {
-  return new Promise<void>((resolve) => { 
-    setTimeout(resolve, 2000);
-  });
+class ExampleScheduler extends Scheduler<string> {
+  
+  protected async poll(): Promise<void> {
+    let result = await someExternalRequest();
+    this.enqueue(result);
+  }
+  
+  protected async work(item: string): Promise<void> {
+    await processData(item);
+  }
 }
 
-const sched = new Skedgy<string>({
-    pollMinDelay: 5,
-    pollMaxDelay: 5,
-    taskMinDelay: 3,
-    taskMaxDelay: 3,
-    poll: async (enqueue) => {
-        let tasks = Math.floor(Math.random() * 3) + 1;
-        for (let i = 0; i < tasks; i++) {
-            if (responses.length === 0) break;
-
-            let data = await someWebRequest();
-            enqueue(data); // Adds the data to the work queue.
-        }
-    },
-    work: async (item) => {
-        await transformData();
-    }
+const sched = new ExampleScheduler({
+  pollMinDelay: 3000,
+  pollMaxDelay: 8000,
+  taskMinDelay: 3000,
+  taskMaxDelay: 5000
 });
 
 // Start the scheduler...
 sched.start();
 
 setTimeout(() => {
-    // Force stop after 1m...
+    // Force stop after 60s...
     sched.stop();
     process.exit(0);
 }, 60 * 1000);
+
+function randomDelay(delay: number) {
+  return new Promise(resolve => setTimeout(resolve, Math.random() * delay));
+}

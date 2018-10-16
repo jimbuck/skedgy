@@ -2,40 +2,40 @@ import { test } from 'ava';
 
 import { Repeater } from './repeater';
 
-test(`Repeater requires options`, t => {
-  const GenericRepeater = Repeater as any;
-  t.throws(() => new GenericRepeater());
+class TestRepeater extends Repeater {
+  
+  protected async act(): Promise<void> { }
+}
 
-  t.throws(() => new Repeater({
-    maxDelay: null,
-    cb: async () => { }
+test(`Repeater requires options`, t => {
+  t.throws(() => new (TestRepeater as any)());
+
+  t.throws(() => new TestRepeater({
+    maxDelay: null
   }));
 });
 
 test(`Repeater defaults to 'minDelay' of zero`, t => {
-  const repeater = new Repeater({
-    maxDelay: 7,
-    cb: async () => { }
+  const repeater = new TestRepeater({
+    maxDelay: 7000
   });
 
   t.is(repeater.minDelay, 0);
-  t.is(repeater.maxDelay, 7);
+  t.is(repeater.maxDelay, 7000);
 });
 
 test(`Repeater does not allow inverse min-max`, t => {
-  t.throws(() => new Repeater({
+  t.throws(() => new TestRepeater({
     minDelay: 999,
-    maxDelay: 1,
-    cb: async () => { }
+    maxDelay: 1
   }));
 });
 
 test.cb(`Repeater#nextEvent provides the date of the next fire`, t => {
-  const delayTime = 10 * 1000;
-  const repeater = new Repeater({
-    minDelay: delayTime / 1000,
-    maxDelay: delayTime / 1000,
-    cb: async () => { }
+  const delayTime = 10000;
+  const repeater = new TestRepeater({
+    minDelay: delayTime,
+    maxDelay: delayTime
   });
 
   repeater.start();

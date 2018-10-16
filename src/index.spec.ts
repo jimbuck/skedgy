@@ -1,39 +1,37 @@
 import { test } from 'ava';
 
-import { Skedgy } from './';
+import { Scheduler, Options } from './';
+
+class TestScheduler<T=any> extends Scheduler<T> {
+
+  constructor(options: Options<T> = {}) {
+    super(options);
+
+  }
+
+  protected async poll(): Promise<void> {
+
+  }
+
+  protected async work(item: T): Promise<void> {
+
+  }
+}
 
 test(`Skedgy requires options`, t => {
-  const GenericSkedgy = Skedgy as any;
+  const GenericSkedgy = Scheduler as any;
   t.throws(() => new GenericSkedgy());
 });
 
-test(`Skedgy requires a 'poll' function`, t => {
-  t.throws(() => new Skedgy({
-    poll: null,
-    work: async () => { }
-  }));
-});
-
-test(`Skedgy requires a 'work' function`, t => {
-
-  t.throws(() => new Skedgy({
-    poll: async () => { },
-    work: null
-  }));
-});
-
 test(`Skedgy#start begins both services`, t => {
-  const skedgy = new Skedgy({
-    poll: async () => { },
-    work: async () => { }
-  });
+  const skedgy = new TestScheduler();
 
   let pollerStartedCount = 0;
   let workerStartedCount = 0;
 
   skedgy['_poller'] = {
     start: () => pollerStartedCount++
-  } as any;  
+  } as any;
   skedgy['_worker'] = {
     start: () => workerStartedCount++
   } as any;
@@ -45,17 +43,14 @@ test(`Skedgy#start begins both services`, t => {
 });
 
 test('Skedgy#stop ends both services', t => {
-  const skedgy = new Skedgy({
-    poll: async () => { },
-    work: async () => { }
-  });
+  const skedgy = new TestScheduler({});
 
   let pollerStoppedCount = 0;
   let workerStoppedCount = 0;
 
   skedgy['_poller'] = {
     stop: () => pollerStoppedCount++
-  } as any;  
+  } as any;
   skedgy['_worker'] = {
     stop: () => workerStoppedCount++
   } as any;
@@ -66,40 +61,36 @@ test('Skedgy#stop ends both services', t => {
   t.is(workerStoppedCount, 1);
 });
 
-test.cb(`Skedgy#nextPoll returns seconds until next poll call`, t => {
-  const pollDelay = 10;
-  const skedgy = new Skedgy({
+test.cb(`Skedgy#nextPoll returns milliseconds until next poll call`, t => {
+  const pollDelay = 10000;
+  const skedgy = new TestScheduler({
     pollMinDelay: pollDelay,
-    pollMaxDelay: pollDelay,  
-    poll: async () => { },
-    work: async () => { }
+    pollMaxDelay: pollDelay
   });
 
   skedgy.start();
-    
+
   setTimeout(() => {
-      let err = (skedgy.nextPoll - pollDelay) / pollDelay;
-      t.true(err < 0.01);
-      t.end();
+    let err = Math.abs(skedgy.nextPoll - pollDelay) / pollDelay;
+    t.true(err < 0.1);
+    skedgy.stop();
+    t.end();
   }, 0);
 });
 
-test.cb(`Skedgy#nextWork returns seconds until next poll call`, t => {
-  const workDelay = 10;
-  const skedgy = new Skedgy({
-    pollMinDelay: 5,
-    pollMaxDelay: 5,
+test.cb(`Skedgy#nextWork returns milliseconds until next poll call`, t => {
+  const workDelay = 10000;
+  const skedgy = new TestScheduler({
     taskMinDelay: workDelay,
-    taskMaxDelay: workDelay,
-    poll: async () => { },
-    work: async () => { }
+    taskMaxDelay: workDelay
   });
 
   skedgy.start();
-    
+
   setTimeout(() => {
-      let err = (skedgy.nextWork - workDelay) / workDelay;
-      t.true(err < 0.01);
-      t.end();
+    let err = Math.abs(skedgy.nextWork - workDelay) / workDelay;
+    t.true(err < 0.1);
+    skedgy.stop();
+    t.end();
   }, 0);
 });

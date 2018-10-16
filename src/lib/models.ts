@@ -6,29 +6,9 @@
  * @template T
  */
 export interface Options<T> {
-  
-  /**
-   * Checks for new work, returning a promise to notify of completion.
-   * 
-   * @param {(data: T) => void} queue Method used to push data onto the work queue.
-   * @returns {Promise<void>} A promise resolving when the poll is complete.
-   * 
-   * @memberOf Options
-   */
-  poll(queue: (data: T) => void): Promise<void>;
-  
-  /**
-   * Executes some work based on data from the queue.
-   * 
-   * @param {T} item The current item off of the queue.
-   * @returns {Promise<void>}
-   * 
-   * @memberOf Options
-   */
-  work(item: T): Promise<void>;
 
   /**
-   * The minimum number of seconds to wait before checking for new work.
+   * The minimum number of milliseconds to wait before checking for new work.
    * 
    * @type {number}
    * @memberOf Options
@@ -36,7 +16,7 @@ export interface Options<T> {
   pollMinDelay?: number;
 
   /**
-   * The maximum number of seconds to the wait before checking for new work ().
+   * The maximum number of milliseconds to the wait before checking for new work ().
    * 
    * @type {number}
    * @memberOf Options
@@ -44,7 +24,7 @@ export interface Options<T> {
   pollMaxDelay?: number;
 
   /**
-   * The minimum amount of time in seconds to delay between task completion and next task processing. 
+   * The minimum amount of time in milliseconds to delay between task completion and next task processing. 
    * 
    * @type {number}
    * @memberOf Options
@@ -52,7 +32,7 @@ export interface Options<T> {
   taskMinDelay?: number;
 
   /**
-   * The maximum amount of time in seconds to delay between task completion and next task processing. 
+   * The maximum amount of time in milliseconds to delay between task completion and next task processing. 
    * 
    * @type {number}
    * @memberOf Options
