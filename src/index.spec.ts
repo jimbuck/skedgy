@@ -88,12 +88,12 @@ test.cb(`Skedgy#nextPoll returns milliseconds until next poll call`, t => {
   }, 0);
 });
 
-test.cb.skip(`Skedgy#nextWork returns milliseconds until next poll call`, t => {
+test.cb.skip(`Skedgy#nextWork returns milliseconds until next work call`, t => {
   const workDelay = 10000;
 
   const skedgy = new TestScheduler({
-    taskMinDelay: workDelay,
-    taskMaxDelay: workDelay
+    workMinDelay: workDelay,
+    workMaxDelay: workDelay
   });
 
   skedgy['_queue'].enqueue(new Task('Step 1', 100));

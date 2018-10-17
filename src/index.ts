@@ -55,8 +55,8 @@ export abstract class Scheduler<T> {
     this._queue = this._options.queue || new MemQueue();
 
     this._worker = new Worker<T>({
-      minDelay: this._options.taskMinDelay,
-      maxDelay: this._options.taskMaxDelay,
+      minDelay: this._options.workMinDelay,
+      maxDelay: this._options.workMaxDelay,
       db: this._queue,
       work: this.work.bind(this)
     });

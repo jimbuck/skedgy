@@ -14,14 +14,14 @@ export interface Options<T> {
   pollMaxDelay?: number;
 
   /**
-   * The minimum amount of time in milliseconds to delay between task completion and next task processing. 
+   * The minimum amount of time in milliseconds to delay between completion and next processing. 
    */
-  taskMinDelay?: number;
+  workMinDelay?: number;
 
   /**
-   * The maximum amount of time in milliseconds to delay between task completion and next task processing. 
+   * The maximum amount of time in milliseconds to delay between completion and next processing.
    */
-  taskMaxDelay?: number;
+  workMaxDelay?: number;
 
   /**
    * FILO Queue used to store the data. Defaults to a simple in-memory queue.

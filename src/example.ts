@@ -31,8 +31,8 @@ class ExampleScheduler extends Scheduler<string> {
 const sched = new ExampleScheduler({
   pollMinDelay: 3000,
   pollMaxDelay: 8000,
-  taskMinDelay: 1000,
-  taskMaxDelay: 2000
+  workMinDelay: 1000,
+  workMaxDelay: 2000
 });
 
 // Start the scheduler...
