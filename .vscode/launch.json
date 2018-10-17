@@ -10,7 +10,6 @@
       "name": "Launch Example",
       "program": "${workspaceRoot}/dist/example.js",
       "cwd": "${workspaceRoot}",
-      "preLaunchTask": "npm: build",
       "outFiles": [
         "${workspaceRoot}/dist/**/*.js"
       ],

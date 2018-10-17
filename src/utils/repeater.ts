@@ -1,5 +1,7 @@
 import { logger, IDebugger } from '../utils/logger';
 
+const EMPTY_STRING = '';
+
 export abstract class Repeater {
   
   public get nextEvent(): Date { return this._nextEvent; }
@@ -32,13 +34,13 @@ export abstract class Repeater {
     }
   }
 
-  public start(): void {
+  public start(purpose: string = EMPTY_STRING): void {
     if (this._running) {
       return;
     }
 
     this._running = true;
-    this._log(`Starting...`);
+    this._log([purpose, 'Starting...'].join(' ').trim());
 
     setImmediate(async () => {
       await this.act();

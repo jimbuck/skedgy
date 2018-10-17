@@ -48,8 +48,8 @@ export abstract class Scheduler<T> {
     this._options = Object.assign({
       pollMinDelay: 300,  // Five minutes
       pollMaxDelay: 300,  // No variance
-      taskMinDelay: 0,    // No delay
-      taskMaxDelay: 0     // No delay
+      workMinDelay: 0,    // No delay
+      workMaxDelay: 0     // No delay
     }, options);
 
     this._queue = this._options.queue || new MemQueue();
@@ -104,7 +104,12 @@ export abstract class Scheduler<T> {
    */
   protected abstract work(item: T): Promise<void>;
 
+  /**
+   * Adds a found item to the queue and starts the worker if it is not already running.
+   * @param item The item to enqueue for work.
+   */
   protected async enqueue(item: T) {
     this._queue.enqueue(item);
+    setImmediate(() => this._worker.start('New work!'));
   }
 }

@@ -5,7 +5,7 @@ const responses = Array(10).fill(0).map((x) => Math.random().toString(36).substr
 
 // Pretend this is a much cooler check...
 async function someExternalRequest(): Promise<string> {
-  await randomDelay(3000);
+  await randomDelay(2000);
   return responses.pop();
 }
 
@@ -13,7 +13,7 @@ async function someExternalRequest(): Promise<string> {
 async function processData(text: string) {
   await randomDelay(3000);
   console.log(text.toUpperCase());
-  await randomDelay(1000);
+  await randomDelay(3000);
 }
 
 class ExampleScheduler extends Scheduler<string> {
@@ -31,8 +31,8 @@ class ExampleScheduler extends Scheduler<string> {
 const sched = new ExampleScheduler({
   pollMinDelay: 3000,
   pollMaxDelay: 8000,
-  taskMinDelay: 3000,
-  taskMaxDelay: 5000
+  taskMinDelay: 1000,
+  taskMaxDelay: 2000
 });
 
 // Start the scheduler...
