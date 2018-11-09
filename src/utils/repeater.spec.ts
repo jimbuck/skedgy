@@ -31,6 +31,20 @@ test(`Repeater does not allow inverse min-max`, t => {
   }));
 });
 
+test(`Repeater does not start if already running.`, t => {
+  const repeater = new TestRepeater({
+    maxDelay: 7000,
+
+    // If it logs then that means it is running...
+    log: (() => t.fail()) as any
+  });
+  repeater['_running'] = true;
+
+  repeater.start();
+
+  t.pass();
+});
+
 test.cb(`Repeater#nextEvent provides the date of the next fire`, t => {
   const delayTime = 10000;
   const repeater = new TestRepeater({

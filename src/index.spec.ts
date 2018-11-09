@@ -19,6 +19,10 @@ class TestScheduler extends Scheduler<Task> {
 
   }
 
+  public get internalQueue() {
+    return this.queue;
+  }
+
   protected async poll(): Promise<void> {
 
   }
@@ -54,6 +58,8 @@ test(`Skedgy#start begins both services`, t => {
 
 test('Skedgy#stop ends both services', t => {
   const skedgy = new TestScheduler({});
+
+  skedgy['isStarted'] = true;
 
   let pollerStoppedCount = 0;
   let workerStoppedCount = 0;
@@ -96,8 +102,8 @@ test.cb.skip(`Skedgy#nextWork returns milliseconds until next work call`, t => {
     workMaxDelay: workDelay
   });
 
-  skedgy['_queue'].enqueue(new Task('Step 1', 100));
-  skedgy['_queue'].enqueue(new Task('Step 2'));
+  skedgy.internalQueue.enqueue(new Task('Step 1', 100));
+  skedgy.internalQueue.enqueue(new Task('Step 2'));
 
   skedgy.start();
 

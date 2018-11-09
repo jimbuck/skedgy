@@ -40,9 +40,11 @@ export abstract class Scheduler<T> {
 
   private _options: Options<T>;
 
-  private _queue: AsyncQueue<T>;
   private _worker: Worker<T>;  
   private _poller: Poller;
+  
+  protected queue: AsyncQueue<T>;
+  protected isStarted: boolean;
 
   constructor(options: Options<T>) {
     this._options = Object.assign({
@@ -52,12 +54,12 @@ export abstract class Scheduler<T> {
       workMaxDelay: 0     // No delay
     }, options);
 
-    this._queue = this._options.queue || new MemQueue();
+    this.queue = this._options.queue || new MemQueue();
 
     this._worker = new Worker<T>({
       minDelay: this._options.workMinDelay,
       maxDelay: this._options.workMaxDelay,
-      db: this._queue,
+      db: this.queue,
       work: this.work.bind(this)
     });
 
@@ -72,9 +74,12 @@ export abstract class Scheduler<T> {
    * Starts the service (beings by polling for new work and begin any saved work).
    */
   public start(): void {
+    if (this.isStarted) return;
+
     log('Starting...');
     this._worker.start();
     this._poller.start();
+    this.isStarted = true;
     log('Started!');
   }
   
@@ -82,9 +87,11 @@ export abstract class Scheduler<T> {
    * Stops the service (any in-progress work may be lost). 
    */
   public stop(): void {
+    if (!this.isStarted) return;
     log('Stopping...');
     this._worker && this._worker.stop();
     this._poller && this._poller.stop();
+    this.isStarted = false;
     log('Stopped!');
   }
 
@@ -109,7 +116,7 @@ export abstract class Scheduler<T> {
    * @param item The item to enqueue for work.
    */
   protected async enqueue(item: T) {
-    this._queue.enqueue(item);
+    this.queue.enqueue(item);
     setImmediate(() => this._worker.start('New work!'));
   }
 }
