@@ -19,8 +19,8 @@ class TestScheduler extends Scheduler<Task> {
 
   }
 
-  public get internalQueue() {
-    return this.queue;
+  public push(item: Task): Promise<void> {
+    return this.enqueue(item);
   }
 
   protected async poll(): Promise<void> {
@@ -28,7 +28,9 @@ class TestScheduler extends Scheduler<Task> {
   }
 
   protected async work(item: Task): Promise<void> {
+    //console.log(`### Starting task ${item.name}...`);
     await delay(item.delay);
+    //console.log(`### Finished task ${item.name}!`);
   }
 }
 
@@ -94,7 +96,7 @@ test.cb(`Skedgy#nextPoll returns milliseconds until next poll call`, t => {
   }, 0);
 });
 
-test.cb.skip(`Skedgy#nextWork returns milliseconds until next work call`, t => {
+test.cb(`Skedgy#nextWork returns milliseconds until next work call`, t => {
   const workDelay = 10000;
 
   const skedgy = new TestScheduler({
@@ -102,17 +104,21 @@ test.cb.skip(`Skedgy#nextWork returns milliseconds until next work call`, t => {
     workMaxDelay: workDelay
   });
 
-  skedgy.internalQueue.enqueue(new Task('Step 1', 100));
-  skedgy.internalQueue.enqueue(new Task('Step 2'));
+  t.is(skedgy.nextWork, null);
+ 
+  skedgy.push(new Task('Step 1', 500));
+  skedgy.push(new Task('Step 2'));
 
   skedgy.start();
 
   setTimeout(() => {
-    let err = Math.abs(skedgy.nextWork - workDelay) / workDelay;
+    let nextWork = skedgy.nextWork;
+    t.not(nextWork, null);
+    let err = Math.abs(nextWork - workDelay) / workDelay;
     t.true(err < 0.1);
     skedgy.stop();
     t.end();
-  }, 100);
+  }, 1000);
 });
 
 function delay(ms: number) {
