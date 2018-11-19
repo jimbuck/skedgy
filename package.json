@@ -1,6 +1,6 @@
 {
   "name": "skedgy",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Periodically check for and queue work to be done!",
   "main": "index.js",
   "types": "./dist/index.d.ts",
