@@ -40,4 +40,8 @@ export class Worker<T> extends Repeater {
     await this._queue.dequeue();
     log('Finished work!');
   }
+
+  public async onError(err: Error) {
+    log(err);
+  }
 }

@@ -43,7 +43,7 @@ export abstract class Repeater {
     this._log([purpose, 'Starting...'].join(' ').trim());
 
     setImmediate(async () => {
-      await this.act();
+      await this._safeAct();
       this._step();
     });
   }
@@ -60,11 +60,21 @@ export abstract class Repeater {
 
   protected abstract act(): Promise<void>;
 
+  protected abstract onError(err: Error): Promise<void>;
+
+  private async _safeAct(): Promise<any> {
+    try {
+      await Promise.resolve().then(() => this.act()).catch(err => this.onError ? this.onError(err) : null);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   private _step(): void {
     if (!this._running) return;
 
     this._idleThen(async () => {
-      await this.act();
+      await this._safeAct();
       this._step();
     });
   }

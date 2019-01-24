@@ -26,4 +26,8 @@ export class Poller extends Repeater {
     await this._poll();
     log('Polled!');
   }
+
+  public async onError(err: Error) {
+    log(err);
+  }
 }
